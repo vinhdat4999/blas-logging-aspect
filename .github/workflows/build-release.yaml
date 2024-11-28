@@ -68,4 +68,4 @@ jobs:
             -Dpackaging=jar
         env:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PACKAGE }}
