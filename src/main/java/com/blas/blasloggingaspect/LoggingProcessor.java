@@ -92,12 +92,11 @@ public class LoggingProcessor {
   }
 
   private void preProcessorHttpRequest() {
-    String globalId = null;
-    String callerId = null;
-    String callerServiceName = null;
+    String globalId = mdcProvider.getGlobalId();
+    String callerId = mdcProvider.getCallerId();
+    String callerServiceName = mdcProvider.getCallerServiceId();
 
     if (null != request) {
-      mdcProvider.clear();
       Enumeration<String> headerNames = request.getHeaderNames();
       while (headerNames.hasMoreElements()) {
         String headerName = headerNames.nextElement();
