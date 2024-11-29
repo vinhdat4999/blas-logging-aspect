@@ -20,5 +20,7 @@ public interface MdcProvider {
 
   String getCallerId();
 
+  String getCallerServiceId();
+
   String getTransactionId();
 }

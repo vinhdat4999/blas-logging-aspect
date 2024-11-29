@@ -1,6 +1,7 @@
 package com.blas.blasloggingaspect.context.impl;
 
 import static com.blas.blascommon.constants.MdcConstants.CALLER_ID;
+import static com.blas.blascommon.constants.MdcConstants.CALLER_SERVICE_NAME;
 import static com.blas.blascommon.constants.MdcConstants.GLOBAL_ID;
 import static com.blas.blascommon.constants.MdcConstants.LOCAL_ID;
 import static com.blas.blascommon.constants.MdcConstants.TRANSACTION_ID;
@@ -57,6 +58,11 @@ public class MdcProviderImpl implements MdcProvider {
   @Override
   public String getCallerId() {
     return MDC.get(CALLER_ID);
+  }
+
+  @Override
+  public String getCallerServiceId() {
+    return MDC.get(CALLER_SERVICE_NAME);
   }
 
   @Override

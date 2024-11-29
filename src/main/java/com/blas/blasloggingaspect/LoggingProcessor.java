@@ -53,9 +53,20 @@ public class LoggingProcessor {
   public void checkMaintenanceMethod() {
   }
 
+  @Pointcut("execution(* com.blas.blascommon.configurations.EmailQueueService.sendMessage(..))")
+  public void hazelcastMessageSenderMethod() {
+  }
+
   @Around("checkMaintenanceMethod()")
   public Object logAroundMaintenanceCheck(ProceedingJoinPoint joinPoint) throws Throwable {
-    preProcessor();
+    preProcessorHttpRequest();
+    return joinPoint.proceed();
+  }
+
+  @Around("hazelcastMessageSenderMethod()")
+  public Object logAroundHazelcastMessageSenderMethod(ProceedingJoinPoint joinPoint)
+      throws Throwable {
+    preProcessorHazelcast();
     return joinPoint.proceed();
   }
 
@@ -69,7 +80,18 @@ public class LoggingProcessor {
     return postProcessor(joinPoint, result, responseTime);
   }
 
-  private void preProcessor() {
+  private void preProcessorHazelcast() {
+    String globalId = mdcProvider.getGlobalId();
+    String callerId = mdcProvider.getCallerId();
+    String callerServiceName = mdcProvider.getCallerServiceId();
+
+    mdcProvider.put(TRACE_ID_FIELD, telemetryCorrelationIdProvider.getId().getTraceId());
+    mdcProvider.put(SPAN_ID_FIELD, telemetryCorrelationIdProvider.getId().getSpanId());
+
+    updateMdcStack(globalId, callerId, callerServiceName);
+  }
+
+  private void preProcessorHttpRequest() {
     String globalId = null;
     String callerId = null;
     String callerServiceName = null;

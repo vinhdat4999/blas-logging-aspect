@@ -10,13 +10,13 @@
   </parent>
 
   <artifactId>blas-logging-aspect</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <name>blas-logging-aspect</name>
   <description>blas-logging-aspect</description>
 
   <properties>
     <java.version>${project.java.version}</java.version>
-    <com.blas.blas.common.version>6.5.0</com.blas.blas.common.version>
+    <com.blas.blas.common.version>6.6.0</com.blas.blas.common.version>
     <maven.compiler.source>${project.java.version}</maven.compiler.source>
     <maven.compiler.target>${project.java.version}</maven.compiler.target>
   </properties>
