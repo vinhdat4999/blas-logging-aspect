@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="false">
   <logger name="ch.qos.logback" level="WARN" />
 
   <springProfile name="aks">
