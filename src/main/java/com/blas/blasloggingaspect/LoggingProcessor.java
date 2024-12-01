@@ -153,8 +153,12 @@ public class LoggingProcessor {
     mdcProvider.put(LOCAL_ID, genUniqueId());
     mdcProvider.put(CALLER_SERVICE_NAME, callerName);
     if (null != request) {
-      mdcProvider.put(APP_METHOD_FIELD, request.getMethod());
-      mdcProvider.put(PROTOCOL_FIELD, request.getProtocol());
+      try {
+        mdcProvider.put(APP_METHOD_FIELD, request.getMethod());
+        mdcProvider.put(PROTOCOL_FIELD, request.getProtocol());
+      } catch (Exception ignored) {
+        // no action
+      }
     }
   }
 }
