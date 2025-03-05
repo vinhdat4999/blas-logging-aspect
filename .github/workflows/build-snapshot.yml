@@ -60,3 +60,17 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.PACKAGE }}
+
+  delete-old-packages:
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: delete old package versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: com.blas.${{ github.event.repository.name }}
+          package-type: maven
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGE }}
