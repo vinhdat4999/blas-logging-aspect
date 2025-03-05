@@ -48,13 +48,6 @@ jobs:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.PACKAGE }}
 
-      - name: Verify JAR exists
-        run: |
-          if [ ! -f target/*.jar ]; then
-            echo "JAR file does not exist! Ensure the build step succeeded."
-            exit 1
-          fi
-
       - name: Publish to GitHub Packages
         run: |
           mvn deploy:deploy-file \
@@ -68,4 +61,18 @@ jobs:
             -Dpackaging=jar
         env:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
+          GITHUB_TOKEN: ${{ secrets.PACKAGE }}
+
+  delete-old-packages:
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: delete old package versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: com.blas.${{ github.event.repository.name }}
+          package-type: maven
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: false
+        env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE }}
