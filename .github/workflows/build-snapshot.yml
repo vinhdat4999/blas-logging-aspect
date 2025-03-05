@@ -1,11 +1,11 @@
-name: build and release
+name: build and publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
 
 jobs:
-  build-release:
+  build-snapshot:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,12 +28,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install libxml2-utils
 
-      - name: Extract release version from pom.xml
+      - name: Extract snapshot version from pom.xml
         id: extractVersion
         run: |
-          serviceVersion=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml | sed "s/-SNAPSHOT//")
+          serviceVersion=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml)
           echo "serviceVersion=$serviceVersion"
           echo "serviceVersion=$serviceVersion" >> $GITHUB_OUTPUT
+
+      - name: Check if version contains -SNAPSHOT
+        run: |
+          if [[ ${{ steps.extractVersion.outputs.serviceVersion }} != *-SNAPSHOT* ]]; then
+          echo "Snapshot version must have suffix -SNAPSHOT"
+          exit 1
+          fi
 
       - name: Cache Maven dependencies
         uses: actions/cache@v2
@@ -48,24 +55,8 @@ jobs:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.PACKAGE }}
 
-      - name: Verify JAR exists
-        run: |
-          if [ ! -f target/*.jar ]; then
-            echo "JAR file does not exist! Ensure the build step succeeded."
-            exit 1
-          fi
-
-      - name: Publish to GitHub Packages
-        run: |
-          mvn deploy:deploy-file \
-            -Durl="https://maven.pkg.github.com/vinhdat4999/${{ github.event.repository.name }}" \
-            -DrepositoryId=github \
-            -Dfile=target/${{ github.event.repository.name }}-${{ steps.extractVersion.outputs.serviceVersion }}-SNAPSHOT.jar \
-            -DpomFile=pom.xml \
-            -DgroupId=com.blas \
-            -DartifactId=${{ github.event.repository.name }} \
-            -Dversion=${{ steps.extractVersion.outputs.serviceVersion }} \
-            -Dpackaging=jar
+      - name: Publish to GitHub Packages Apache Maven
+        run: mvn deploy
         env:
           GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.PACKAGE }}
